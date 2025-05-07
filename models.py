@@ -12,9 +12,7 @@ import jax.numpy as jnp
 from jax import random
 jax.config.update("jax_enable_x64", True)
 
-# Set the random seed for JAX
 
-# Define the MLP model
 def mlp(activation):
     def model(params, inpt):
         hidden = inpt
@@ -135,7 +133,7 @@ def derivative_propagation3(params, x):
            d2z_dxx = term1 + term2
            
            # Update third-order derivatives
-# term1: sigma_triple_prime * dz_dx_old_i * dz_dx_old_j * dz_dx_old_k
+
            term1 = sigma_triple_prime[:, None, None, None] * jnp.einsum('ni,nj,nk->nijk', dz_dx_old, dz_dx_old, dz_dx_old)
          
          # term2: sigma_double_prime * (dz_dx_old_i * d2z_dxx_old_jk + dz_dx_old_j * d2z_dxx_old_ik + dz_dx_old_k * d2z_dxx_old_ij)
