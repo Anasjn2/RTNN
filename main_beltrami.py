@@ -343,7 +343,7 @@ D2=strain_rate(params, x)[0]
 Re=1
 nu=1/Re
 
-def inductive_bias(params, x):
+def stress_loss(params, x):
     
 
     
@@ -523,11 +523,11 @@ def loss(params):
     
     
     boundary=5. * 0.5 * jnp.mean(v_boundary_res_u(params, x_Gamma)**2)
-    ib=0.5 *jnp.mean((vmap(lambda x: inductive_bias(params, x))(x_Omega))**2)
+    sl=0.5 *jnp.mean((vmap(lambda x: stress_loss(params, x))(x_Omega))**2)
 
     
     
-    return boundary+ib
+    return boundary+sl
 loss(params)
 
 
@@ -546,10 +546,10 @@ def evaluation(params):
 
   
 
-        # Inductive bias
-        bias = jnp.mean((vmap(lambda x: inductive_bias(params, x))(x_evalt[-1])) ** 2)
+
+        stress_loss = jnp.mean((vmap(lambda x: stress_loss(params, x))(x_evalt[-1])) ** 2)
         
-        return loss_value,u_error,bias
+        return loss_value,u_error,stress_loss
 #%%
 
 from jax import jit
@@ -595,13 +595,13 @@ for epoch in range(n_epochs):
 
     if epoch % 500 == 0:
         loss_value = state.value
-        final_loss, u_error, bias = evaluation(params)
+        final_loss, u_error, sl = evaluation(params)
 
         # Log data
         iterations.append(epoch)
         relative_l2_errors.append(float(u_error))
         losses.append(float(loss_value))
-        simulation_times.append(float(epoch * 1e-3))  # Replace with actual simulation time if available
+        simulation_times.append(float(epoch * 1e-3)) 
 
         # Optionally print progress
         print(f"Epoch {epoch}, Loss: {loss_value}, Error: {u_error}")
