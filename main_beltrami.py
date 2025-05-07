@@ -52,37 +52,6 @@ def init_params(sizes, key):
     return [random_layer_params(m, n, k) for m, n, k in zip(sizes[:-1], sizes[1:], keys)]
 
 
-# Apply periodic embeddings
-def apply_periodic_embedding(x, periodic_dims, periods):
-    """
-    Apply sine and cosine periodic embeddings to specific dimensions of the input.
-    
-    Args:
-    x: Input data, expected shape (batch_size, features).
-    periodic_dims: List of dimension indices to which to apply the embedding.
-    periods: List of periods corresponding to the periodic dimensions.
-    
-    Returns:
-    Augmented feature matrix.
-    """
-
-    if len(periodic_dims) != len(periods):
-        raise ValueError("Each periodic dimension must have a corresponding period value.")
-
-    original_features = [x[i] for i in range(x.shape[0]) if i not in periodic_dims]
-    periodic_features = [x[i] for i in periodic_dims]
-
-    sin_cos_features = []
-    for idx, feature in enumerate(periodic_features):
-        frequency = 2 * jnp.pi / periods[idx]
-        sin_feature = jnp.sin(feature * frequency)
-        cos_feature = jnp.cos(feature * frequency)
-        sin_cos_features.extend([sin_feature, cos_feature])
-
-    augmented_x = jnp.reshape(jnp.array([original_features+sin_cos_features]),(-1,))
-    
-    return augmented_x
-
 
 # Define the MLP model
 def mlp(activation):
@@ -159,13 +128,10 @@ def derivative_propagation(params, x):
 
     return z, dz_dx, d2z_dxx
 # Example input
-x = jnp.array([0.5,1,0.5,0.5])
+
 model = jax.jit(mlp(activation))
 params = init_params(sizes, key)
 
-_, _, d2z_dxx = derivative_propagation(params, x) 
-
-#%%
 
 
 w=1
@@ -189,8 +155,6 @@ def compute_H_ab(x, params):
         H_ab +=term 
 
     return H_ab
-compute_H_ab(x, params)
-
 
 
 
@@ -209,7 +173,6 @@ def model_uvwp(params,x):
     p=(1/3)*(T_t.trace()-m)
     return jnp.array([u,v,w,p])
 
-model_uvwp(params,x)
 
 
 
@@ -226,7 +189,6 @@ def model_u(params,x):
     m=u**2+v**2+w**2
     p=(1/3)*(T_t.trace()-m)
     return jnp.array([u,v,w])
-model_u(params,x)
 
 
 
@@ -528,7 +490,7 @@ def loss(params):
     
     
     return boundary+sl
-loss(params)
+
 
 
 #%%
