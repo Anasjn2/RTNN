@@ -7,7 +7,7 @@ Divergence-free symmetric tensors (DFSTs) are fundamental in continuum mechanics
 
 
 
-We provide a demo for the Beltrami flow, in the file main_beltrami.py , more example will be provided with the Camera-ready version of the paper
+We provide a demo for the Beltrami flow, in the file main_beltrami.py , more examples will be provided with the Camera-ready version of the paper
 
 
 
